@@ -1,3 +1,6 @@
+#private data
 settings.json
-node_modules/
+*.db
 
+#libs
+node_modules/
