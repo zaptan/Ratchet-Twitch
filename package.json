@@ -1,0 +1,16 @@
+{
+  "name": "ratchetBot",
+  "version": "0.1.0",
+  "description": "Ratchet for Twitch",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Zaptan",
+  "license": "ISC",
+  "dependencies": {
+    "sqlite3": "^3.1.4",
+    "tmi.js": "1.1.1",
+    "winston": "^2.2.0"
+  }
+}

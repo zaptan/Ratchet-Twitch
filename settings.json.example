@@ -1,0 +1,6 @@
+{
+  "token":"oauth:##############################",
+  "username":"Your_Name",
+  "channels":["#Your_Channel", "#Another_Channel"],
+  "database":"database.db"
+}
