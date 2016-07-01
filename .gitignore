@@ -1,6 +1,7 @@
 #private data
 settings.json
 *.db
-
+#temp logfiles
+*.log
 #libs
 node_modules/
