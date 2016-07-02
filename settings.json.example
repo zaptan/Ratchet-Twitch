@@ -1,6 +1,8 @@
 {
   "token":"oauth:##############################",
   "username":"Your_Name",
+  "debug": false,
+  "reconnect": true,
   "channels":["#Your_Channel", "#Another_Channel"],
   "database":"database.db"
 }

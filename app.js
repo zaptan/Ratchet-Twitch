@@ -1,5 +1,6 @@
 var winston = require('winston');
 var tmi = require("tmi.js");
+var sqlite3 = require('sqlite3').verbose();
 
 var fs, settingsFile;
 
@@ -25,12 +26,14 @@ transports: [
 ]
 });
 
+var db = new sqlite3.Database(settings.database);
+
 var options = {
     options: {
-        debug: true
+        debug: settings.debug
     },
     connection: {
-        reconnect: true
+        reconnect: settings.reconnect
     },
     identity: {
         username: settings.username,
@@ -40,36 +43,39 @@ var options = {
     channels: settings.channels
 };
 
-function rsubloop(times) {
-    var strOut = "";
-    for (i = 0; i < times; i++) {
-        strOut += "dasH ";
-    }
-    return strOut;
-}
 
 var client = tmi.client(options);
 
 client.on("cheer", function (channel, userstate, message) {
-    bits.log('info', message, {'channel': channel, 'user': userstate});
-    // userstate.bits
+    query = "INSERT INTO events (channel, user, timestamp, subscriber, turbo, type, count, badges, emotes, message) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+
+    bits.log('info', query);
+
+    db.run(query, [channel, userstate["username"], Date.now(), userstate["subscriber"], userstate["turbo"], 2, userstate["bits"], JSON.stringify(userstate["badges"]),  JSON.stringify(userstate["emotes"]), message ]);
 });
 
 
 client.on("chat", function (channel, userstate, message, self) {
-    chat.log('info', message, { 'channel': channel, 'user': userstate["display-name"]});
+    query = "INSERT INTO events (channel, user, timestamp, subscriber, turbo, type, badges, emotes, message) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+    chat.log('info', query);
+        db.run(query, [channel, userstate["username"], Date.now(), userstate["subscriber"], userstate["turbo"], 0, JSON.stringify(userstate["badges"]),  JSON.stringify(userstate["emotes"]), message ]);
     if (self) return;
 });
 
 client.on("resub", function (channel, username, months, message) {
-    subs.log('info', username + " resubbed for " + months + " months yay!", {'channel': channel, 'user': username});
+    query = "INSERT INTO events (channel, user, timestamp, subscriber, type, count, message) VALUES (?, ?, ?, ?, ?, ?, ?);";
+
+    subs.log('info', query);
+        db.run(query, [channel, username, Date.now(), 'True', 1, months, message ]);
 });
 
 client.on("subscription", function (channel, username) {
-    subs.log('info', username + " is a new sub yay!", {'channel': channel, 'user': username});
+    query = "INSERT INTO events (channel, user, timestamp, subscriber, type, count) VALUES (?, ?, ?, ?, ?, ?);";
+
+    subs.log('info', query);
+        db.run(query, [channel, username, Date.now(), 'True', 1, 1 ]);
 });
-
-
 
 // Connect the client to the server..
 client.connect();
